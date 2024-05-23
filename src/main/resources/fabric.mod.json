@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "dfrevert",
+	"version": "${version}",
+	"name": "DF Revert",
+	"description": "Reverts chattags to their old/custom colors.",
+	"authors": [
+		"fire"
+	],
+	"contact": {
+		"homepage": "https://github.com/firef1a/DF-Revert"
+	},
+	"license": "MIT",
+	"icon": "assets/dfrevert/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"main": [
+			"dev.fire.DFrevert"
+		],
+		"modmenu": [
+			"dev.fire.config.ModMenuIntegration"
+		]
+	},
+	"mixins": [
+		"dfrevert.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.15.11",
+		"minecraft": "~1.20.4",
+		"java": ">=17",
+		"fabric-api": "*",
+		"yet_another_config_lib_v3": "*"
+	},
+	"recommends": {
+		"modmenu": "*"
+	}
+}

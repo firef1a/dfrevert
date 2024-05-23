@@ -1,0 +1,14 @@
+{
+	"required": true,
+	"package": "dev.fire.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"mixins": [
+		"ExampleMixin",
+		"ChatHudMixin",
+		"PlayerListHudMixin",
+		"EntityRendererMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
