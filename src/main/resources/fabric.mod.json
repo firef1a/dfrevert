@@ -8,7 +8,10 @@
 		"fire"
 	],
 	"contact": {
-		"homepage": "https://github.com/firef1a/dfrevert"
+		"homepage": "https://github.com/firef1a/dfrevert",
+		"sources": "https://github.com/firef1a/dfrevert",
+		"repo": "https://github.com/firef1a/dfrevert",
+		"issues": "https://github.com/firef1a/dfrevert/issues"
 	},
 	"license": "MIT",
 	"icon": "assets/dfrevert/icon.png",
