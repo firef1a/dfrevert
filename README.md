@@ -1,3 +1,5 @@
+# DF Revert
+This is a client side fabric mod for use on DiamondFire.
 ## What does this mod do?
 Replaces the **TERRIBLE** and **UGLY** _new rank tags_ 👎👎LLLL with the **AMAZING** and **BEAUTIFUL** _old chat tags_ (very W) 🔥, or you can replace the rank tags with your own colors, text, and symbols 🌈!!!
 
