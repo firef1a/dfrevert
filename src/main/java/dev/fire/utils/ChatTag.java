@@ -32,24 +32,15 @@ public class ChatTag implements Serializable {
         return object.toString();
     }
 
-    public String toLeftMiniMessage() {
+    public String toMainMiniMessage() {
         String minimessage = "";
         minimessage = minimessage + convertStringWithColorToMiniMessage("[", BracketColor);
         minimessage = minimessage + convertStringWithColorToMiniMessage(Symbol, SymbolColor);
         if ( addBoldSpace ) minimessage = minimessage + "<bold>\u200C</bold>";
-        return minimessage;
-    }
-    public String toRightMiniMessage() {
-        String minimessage = "";
+        minimessage = minimessage + convertStringWithColorToMiniMessage(TextContent, TextColor);
         if ( addBoldSpace ) minimessage = minimessage + "<bold>\u200C</bold>";
         minimessage = minimessage + convertStringWithColorToMiniMessage(Symbol, SymbolColor);
         minimessage = minimessage + convertStringWithColorToMiniMessage("]", BracketColor);
-        return minimessage;
-    }
-
-    public String toMainMiniMessage() {
-        String minimessage = "";
-        minimessage = minimessage + convertStringWithColorToMiniMessage(TextContent, TextColor);
 
         return minimessage;
     }

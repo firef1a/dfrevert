@@ -200,19 +200,7 @@ public class TextUtil {
             ChatTag normal = DefaultConfig.newChatTags.get(key);
             MiniMessageChatTag custom = c.chatTags.get(key);
 
-            int color;
-            TextColor colorObj = null;
-
-            if (!custom.getAsFormatted(custom.mainvalue).getSiblings().isEmpty()) {
-                colorObj = custom.getAsFormatted(custom.mainvalue).getSiblings().get(0).getStyle().getColor();
-            }
-            if (colorObj == null) {
-                //color = DefaultConfig.newChatTags.get(key).TextColor;
-                color = 0xffffff;
-            } else {
-                color = colorObj.getRgb();
-            }
-
+            int color = custom.ProfileColor;
             // replace
             text = replaceTextInternal(text, getProfileLine(normal.TextColor,false), getProfileLine(color,false), false);
             text = replaceTextInternal(text, getProfileLine(normal.TextColor, true), getProfileLine(color,true), false);
@@ -223,18 +211,8 @@ public class TextUtil {
 
         // vipenabled / disabled logic
         MiniMessageChatTag custom_vip = c.chatTags.get("vip");
-        int color;
-        TextColor colorObj = null;
-        
-        if (!custom_vip.getAsFormatted(custom_vip.mainvalue).getSiblings().isEmpty()) {
-            colorObj = custom_vip.getAsFormatted(custom_vip.mainvalue).getSiblings().get(0).getStyle().getColor();
-        }
-        if (colorObj == null) {
-            //color = DefaultConfig.newChatTags.get(key).TextColor;
-            color = 0xffffff;
-        } else {
-            color = colorObj.getRgb();
-        }
+        int color = custom_vip.ProfileColor;
+
         if (!c.VipEnabled) {
             text = replaceTextInternal(text, VIP_PREFIX, Text.empty(), true);
             text = replaceTextInternal(text, VIP_WHOIS, Text.empty(), false);

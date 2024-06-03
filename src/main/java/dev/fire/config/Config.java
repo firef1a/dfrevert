@@ -10,6 +10,7 @@ import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.*;
 import net.minecraft.text.Text;
 
+import java.awt.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -41,9 +42,9 @@ public class Config {
                 int bracketColor = DefaultConfig.newChatTags.get("vip").BracketColor;
                 int symbolColor = DefaultConfig.newChatTags.get("vip").SymbolColor;
 
-                mmobj.leftvalue = ChatTag.convertStringWithColorToMiniMessage("[", bracketColor);
-                mmobj.mainvalue = ChatTag.convertStringWithColorToMiniMessage("⭐", symbolColor);
-                mmobj.rightvalue = ChatTag.convertStringWithColorToMiniMessage("]", bracketColor);
+                mmobj.mainvalue = ChatTag.convertStringWithColorToMiniMessage("[", bracketColor) +
+                                  ChatTag.convertStringWithColorToMiniMessage("⭐", symbolColor) +
+                                  ChatTag.convertStringWithColorToMiniMessage("]", bracketColor);
 
                 mmobj.shortvalue =
                         ChatTag.convertStringWithColorToMiniMessage("[", bracketColor) +
@@ -150,22 +151,10 @@ public class Config {
     }
 
 
-    private OptionGroup groupBuilder(String key, String name) {
+    private OptionGroup.Builder groupBuilder(String key, String name) {
         return OptionGroup.createBuilder()
                 .name(Text.literal(name))
                 .description(OptionDescription.of(Text.literal(name + " Chat Tag")))
-                .option(Option.createBuilder(String.class)
-                        .name(Text.literal("Left Text Value"))
-                        .description(OptionDescription.createBuilder()
-                                .text(Text.literal("Formatted in MiniMessage"))
-                                .build())
-                        .binding(
-                                DefaultConfig.oldChatTags.get(key).toLeftMiniMessage(),
-                                () -> chatTags.get(key).leftvalue,
-                                opt -> chatTags.get(key).leftvalue = opt
-                        )
-                        .controller(StringControllerBuilder::create)
-                        .build())
                 .option(Option.createBuilder(String.class)
                         .name(Text.literal("Main Text Value"))
                         .description(OptionDescription.createBuilder()
@@ -175,18 +164,6 @@ public class Config {
                                 DefaultConfig.oldChatTags.get(key).toMainMiniMessage(),
                                 () -> chatTags.get(key).mainvalue,
                                 opt -> chatTags.get(key).mainvalue = opt
-                        )
-                        .controller(StringControllerBuilder::create)
-                        .build())
-                .option(Option.createBuilder(String.class)
-                        .name(Text.literal("Right Text Value"))
-                        .description(OptionDescription.createBuilder()
-                                .text(Text.literal("Formatted in MiniMessage"))
-                                .build())
-                        .binding(
-                                DefaultConfig.oldChatTags.get(key).toRightMiniMessage(),
-                                () -> chatTags.get(key).rightvalue,
-                                opt -> chatTags.get(key).rightvalue = opt
                         )
                         .controller(StringControllerBuilder::create)
                         .build())
@@ -201,8 +178,8 @@ public class Config {
                                 opt -> chatTags.get(key).shortvalue = opt
                         )
                         .controller(StringControllerBuilder::create)
-                        .build())
-                .build();
+                        .build());
+
 
     }
 
@@ -277,7 +254,9 @@ public class Config {
             if (key == "emeritus") {
                 name = "Emeritus";
             }
-            configBuilder.group(groupBuilder(key,name));
+
+            OptionGroup.Builder builder = groupBuilder(key,name);
+            configBuilder.group(builder.build());
         });
 
         return configBuilder;
@@ -293,7 +272,21 @@ public class Config {
         normalChatTagList.forEach(k -> {
             String key = (String) k;
             String name = DefaultConfig.newChatTags.get(key).TextContent;
-            configBuilder.group(groupBuilder(key,name));
+
+            OptionGroup.Builder builder = groupBuilder(key,name);
+            builder.option(Option.createBuilder(Color.class)
+                    .name(Text.literal("/whois Color"))
+                    .description(OptionDescription.createBuilder()
+                            .text(Text.literal("Color of your /whois, dictated by the highest paid rank you have. ie: Overlord, Mythic, Emperor, or Noble. "))
+                            .build())
+                    .binding(
+                            new Color(DefaultConfig.oldChatTags.get(key).TextColor),
+                            () -> new Color(chatTags.get(key).ProfileColor),
+                            opt -> chatTags.get(key).ProfileColor = opt.getRGB()
+                    )
+                    .controller(ColorControllerBuilder::create)
+                    .build());
+            configBuilder.group(builder.build());
         });
 
         return configBuilder;
@@ -309,7 +302,9 @@ public class Config {
         specialChatTagList.forEach(k -> {
             String key = (String) k;
             String name = DefaultConfig.newChatTags.get(key).TextContent;
-            configBuilder.group(groupBuilder(key,name));
+
+            OptionGroup.Builder builder = groupBuilder(key,name);
+            configBuilder.group(builder.build());
         });
 
         return configBuilder;
