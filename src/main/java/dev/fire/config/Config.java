@@ -275,7 +275,7 @@ public class Config {
 
             OptionGroup.Builder builder = groupBuilder(key,name);
             builder.option(Option.createBuilder(Color.class)
-                    .name(Text.literal("/whois Color"))
+                    .name(Text.literal("Profile Color"))
                     .description(OptionDescription.createBuilder()
                             .text(Text.literal("Color of your /whois, dictated by the highest paid rank you have. ie: Overlord, Mythic, Emperor, or Noble. "))
                             .build())
@@ -304,6 +304,20 @@ public class Config {
             String name = DefaultConfig.newChatTags.get(key).TextContent;
 
             OptionGroup.Builder builder = groupBuilder(key,name);
+            if (Objects.equals(key, "vip")) {
+                builder.option(Option.createBuilder(Color.class)
+                        .name(Text.literal("Badge Color"))
+                        .description(OptionDescription.createBuilder()
+                                .text(Text.literal("Color of your vip badge ._."))
+                                .build())
+                        .binding(
+                                new Color(DefaultConfig.oldChatTags.get(key).TextColor),
+                                () -> new Color(chatTags.get(key).ProfileColor),
+                                opt -> chatTags.get(key).ProfileColor = opt.getRGB()
+                        )
+                        .controller(ColorControllerBuilder::create)
+                        .build());
+            }
             configBuilder.group(builder.build());
         });
 
