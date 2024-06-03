@@ -14,6 +14,7 @@ public class DefaultConfig {
 
     public static boolean DisableMod = false;
     public static boolean ShortenedChatTags = true;
+    public static boolean DebugMode = false;
 
     public static Map<String, ChatTag> oldChatTags = Map.ofEntries(
             entry("vip",       new ChatTag(0xFFAA00, 0xFFD47F, 0xFFD47F, "⭐","VIP", false)),
@@ -65,9 +66,6 @@ public class DefaultConfig {
     ));
 
     public static ArrayList<String> staffList = new ArrayList<String>(Arrays.asList(
-            "emeritus",
-            "retired",
-            "builder",
             "owner",
             "admin",
             "dev",
@@ -79,14 +77,10 @@ public class DefaultConfig {
             "jrhelper"
     ));
 
-    public static Text getOldOverlord() {
-        ChatTag overlord = oldChatTags.get("overlord");
-        return Text.empty()
-                .append(Text.literal("[").withColor(overlord.BracketColor))
-                .append(Text.empty().append(Text.literal(overlord.Symbol).withColor(overlord.SymbolColor))
-                        .append(Text.literal(overlord.TextContent).withColor(overlord.TextColor))
-                        .append(Text.literal(overlord.Symbol).withColor(overlord.SymbolColor)))
-                .append(Text.literal("]").withColor(overlord.BracketColor));
-    }
-
+    public static ArrayList<String> specialList = new ArrayList<String>(Arrays.asList(
+            "vip",
+            "emeritus",
+            "retired",
+            "builder"
+    ));
 }

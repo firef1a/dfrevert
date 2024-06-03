@@ -21,9 +21,21 @@ public class Config {
 
     public boolean ShortenedChatTags = DefaultConfig.ShortenedChatTags;
     public boolean DisableMod = DefaultConfig.DisableMod;
+    public boolean DebugMode = DefaultConfig.DebugMode;
     public boolean VipEnabled = true;
 
-    public Map<String, ChatTag> chatTags = Map.copyOf(DefaultConfig.oldChatTags);
+    public Map<String, MiniMessageChatTag> chatTags = convertToMinimessage(DefaultConfig.oldChatTags);
+
+    public static Map<String, MiniMessageChatTag> convertToMinimessage(Map<String, ChatTag> map) {
+        Map<String, MiniMessageChatTag> new_map = new HashMap<String, MiniMessageChatTag>();
+
+        for (Map.Entry<String, ChatTag> entry : map.entrySet()) {
+            String key = entry.getKey();
+            ChatTag value = entry.getValue();
+            new_map.put(key, value.toMiniMessageClass());
+        }
+        return new_map;
+    }
 
     public Config() { }
 
@@ -37,14 +49,14 @@ public class Config {
 
 
                 // create chat tags
-                Map<String, ChatTag> chattaghashmap = new HashMap<String, ChatTag>();
+                Map<String, MiniMessageChatTag> chattaghashmap = new HashMap<String, MiniMessageChatTag>();
 
                 JsonObject map_json_object = new JsonParser().parse(object.get("_JsonChatTags").getAsString()).getAsJsonObject();
 
                 map_json_object.keySet().forEach(chatkey -> {
                     try {
                         JsonElement map_chat_key = map_json_object.get(chatkey);
-                        ChatTag new_value = gson.fromJson(map_chat_key.getAsString(), ChatTag.class);
+                        MiniMessageChatTag new_value = gson.fromJson(map_chat_key.getAsString(), MiniMessageChatTag.class);
                         chattaghashmap.put(chatkey, new_value);
                     } catch (Exception exception) {
                         try {
@@ -55,17 +67,18 @@ public class Config {
                     }
                 });
 
-                Map<String, ChatTag> copy_chatmap = Map.copyOf(chattaghashmap);
+                Map<String, MiniMessageChatTag> copy_chatmap = Map.copyOf(chattaghashmap);
 
                 if (copy_chatmap.size() != DefaultConfig.newChatTags.size()) {
                     throw new DfrevertException("Invalid Config!");
                 }
-                instance.chatTags = copy_chatmap;
+                //instance.chatTags = copy_chatmap;
 
                 // load primitives
                 instance.VipEnabled = object.get("VipEnabled").getAsBoolean();
                 instance.ShortenedChatTags =  object.get("ShortenedChatTags").getAsBoolean();
                 instance.DisableMod = object.get("DisableMod").getAsBoolean();
+                instance.DebugMode = object.get("DebugMode").getAsBoolean();
 
             } catch (Exception exception) {
                 DFrevert.LOGGER.info("Config didn't load: " + exception);
@@ -88,21 +101,25 @@ public class Config {
             object.addProperty("VipEnabled", VipEnabled);
             object.addProperty("ShortenedChatTags", ShortenedChatTags);
             object.addProperty("DisableMod", DisableMod);
+            object.addProperty("DebugMode", DebugMode);
+
 
             JsonObject JsonChatTags = new JsonObject();
 
-            for (Map.Entry<String, ChatTag> entry : chatTags.entrySet()) {
+            for (Map.Entry<String, MiniMessageChatTag> entry : chatTags.entrySet()) {
                 String key = entry.getKey();
-                ChatTag chattag = entry.getValue();
+                MiniMessageChatTag chattag = entry.getValue();
 
                 JsonChatTags.addProperty(key, chattag.toJson());
             }
             object.addProperty("_JsonChatTags", JsonChatTags.toString());
 
             FileManager.writeConfig(object.toString());
+
         } catch (Exception e) {
             DFrevert.LOGGER.info("Couldn't save config: " + e);
         }
+
     }
 
     public YetAnotherConfigLib getLibConfig() {
@@ -111,8 +128,66 @@ public class Config {
                         .title(Text.literal("Used for narration. Could be used to render a title in the future."))
                             .category(normalChatTags().build())
                             .category(staffChatTags().build())
+                            .category(specialChatTags().build())
                             .category(miscCategory().build());
         return yacl.save(this::save).build();
+    }
+
+
+    private OptionGroup groupBuilder(String key, String name) {
+        return OptionGroup.createBuilder()
+                .name(Text.literal(name))
+                .description(OptionDescription.of(Text.literal(name + " Chat Tag")))
+                .option(Option.createBuilder(String.class)
+                        .name(Text.literal("Left Text Value"))
+                        .description(OptionDescription.createBuilder()
+                                .text(Text.literal("Formatted in MiniMessage"))
+                                .build())
+                        .binding(
+                                DefaultConfig.oldChatTags.get(key).toLeftMiniMessage(),
+                                () -> chatTags.get(key).leftvalue,
+                                opt -> chatTags.get(key).leftvalue = opt
+                        )
+                        .controller(StringControllerBuilder::create)
+                        .build())
+                .option(Option.createBuilder(String.class)
+                        .name(Text.literal("Main Text Value"))
+                        .description(OptionDescription.createBuilder()
+                                .text(Text.literal("Formatted in MiniMessage"))
+                                .build())
+                        .binding(
+                                DefaultConfig.oldChatTags.get(key).toMainMiniMessage(),
+                                () -> chatTags.get(key).mainvalue,
+                                opt -> chatTags.get(key).mainvalue = opt
+                        )
+                        .controller(StringControllerBuilder::create)
+                        .build())
+                .option(Option.createBuilder(String.class)
+                        .name(Text.literal("Right Text Value"))
+                        .description(OptionDescription.createBuilder()
+                                .text(Text.literal("Formatted in MiniMessage"))
+                                .build())
+                        .binding(
+                                DefaultConfig.oldChatTags.get(key).toRightMiniMessage(),
+                                () -> chatTags.get(key).rightvalue,
+                                opt -> chatTags.get(key).rightvalue = opt
+                        )
+                        .controller(StringControllerBuilder::create)
+                        .build())
+                .option(Option.createBuilder(String.class)
+                        .name(Text.literal("Short Tag Value"))
+                        .description(OptionDescription.createBuilder()
+                                .text(Text.literal("Defines what the tag looks like when its compressed"))
+                                .build())
+                        .binding(
+                                DefaultConfig.oldChatTags.get(key).toShortValue(),
+                                () -> chatTags.get(key).shortValue,
+                                opt -> chatTags.get(key).shortValue = opt
+                        )
+                        .controller(StringControllerBuilder::create)
+                        .build())
+                .build();
+
     }
 
 
@@ -120,7 +195,20 @@ public class Config {
         return ConfigCategory.createBuilder()
                 .name(Text.literal("Misc. Toggles"))
                 .tooltip(Text.literal("Toggle visibility of chat tags."))
-
+                .option(Option.createBuilder(boolean.class)
+                        .name(Text.literal("Vip Enabled"))
+                        .description(OptionDescription.createBuilder()
+                                .text(Text.literal("Toggles weather the VIP tag is shown."))
+                                .text(Text.literal("This also affects the VIP tag and VIP founding badge in player's profiles when you /whois them."))
+                                .text(Text.literal(""))
+                                .build())
+                        .binding(
+                                DefaultConfig.VipEnabled,
+                                () -> VipEnabled,
+                                opt -> VipEnabled = opt
+                        )
+                        .controller(TickBoxControllerBuilder::create)
+                        .build())
                 .option(Option.createBuilder(boolean.class)
                         .name(Text.literal("Disable Mod"))
                         .description(OptionDescription.createBuilder()
@@ -144,8 +232,19 @@ public class Config {
                                 opt -> ShortenedChatTags = opt
                         )
                         .controller(TickBoxControllerBuilder::create)
-                .build());
-
+                        .build())
+                .option(Option.createBuilder(boolean.class)
+                        .name(Text.literal("Debug Mode"))
+                        .description(OptionDescription.createBuilder()
+                                .text(Text.literal("Prints the Text Literal of chat messages to the console (for debugging duh)"))
+                                .build())
+                        .binding(
+                                DefaultConfig.DebugMode,
+                                () -> DebugMode,
+                                opt -> DebugMode = opt
+                        )
+                        .controller(TickBoxControllerBuilder::create)
+                        .build());
     }
 
     private ConfigCategory.Builder staffChatTags() {
@@ -156,85 +255,17 @@ public class Config {
         ArrayList staffChatTagList = new ArrayList<>();
         staffChatTagList.addAll(DefaultConfig.staffList);
 
-        staffChatTagList.forEach(key -> {
+        staffChatTagList.forEach(k -> {
+            String key = (String) k;
             String name = DefaultConfig.newChatTags.get(key).TextContent;
             if (key == "emeritus") {
                 name = "Emeritus";
             }
-            configBuilder.group(OptionGroup.createBuilder()
-                    .name(Text.literal(name))
-                    .description(OptionDescription.of(Text.literal(name + " Chat Tag")))
-
-                    .option(Option.createBuilder(Color.class)
-                            .name(Text.literal("Bracket Color"))
-                            .description(OptionDescription.createBuilder()
-                                    .text(Text.literal("Color of brackets"))
-                                    .build())
-                            .binding(
-                                    new Color(DefaultConfig.oldChatTags.get(key).BracketColor),
-                                    () -> new Color(chatTags.get(key).BracketColor),
-                                    opt -> chatTags.get(key).BracketColor = opt.getRGB()
-                            )
-                            .controller(ColorControllerBuilder::create)
-                            .build())
-                    .option(Option.createBuilder(Color.class)
-                            .name(Text.literal("Symbol Color"))
-                            .description(OptionDescription.createBuilder()
-                                    .text(Text.literal("Color of symbols"))
-                                    .build())
-                            .binding(
-                                    new Color(DefaultConfig.oldChatTags.get(key).SymbolColor),
-                                    () -> new Color(chatTags.get(key).SymbolColor),
-                                    opt -> chatTags.get(key).SymbolColor = opt.getRGB()
-                            )
-                            .controller(ColorControllerBuilder::create)
-                            .build())
-                    .option(Option.createBuilder(Color.class)
-                            .name(Text.literal("Text Content Color"))
-                            .description(OptionDescription.createBuilder()
-                                    .text(Text.literal("Color of the main tag text"))
-                                    .build())
-                            .binding(
-                                    new Color(DefaultConfig.oldChatTags.get(key).TextColor),
-                                    () -> new Color(chatTags.get(key).TextColor),
-                                    opt -> chatTags.get(key).TextColor = opt.getRGB()
-                            )
-                            .controller(ColorControllerBuilder::create)
-                            .build())
-                    .option(Option.createBuilder(String.class)
-                            .name(Text.literal("Symbol"))
-                            .description(OptionDescription.createBuilder()
-                                    .text(Text.literal("Symbol(s) that go on the left and right side of the main text content"))
-                                    .build())
-                            .binding(
-                                    DefaultConfig.oldChatTags.get(key).Symbol,
-                                    () -> chatTags.get(key).Symbol,
-                                    opt -> chatTags.get(key).Symbol = opt
-                            )
-                            .controller(StringControllerBuilder::create)
-                            .build())
-                    .option(Option.createBuilder(String.class)
-                            .name(Text.literal("Text Content"))
-                            .description(OptionDescription.createBuilder()
-                                    .text(Text.literal("The main text of the tag"))
-                                    .build())
-                            .binding(
-                                    DefaultConfig.oldChatTags.get(key).TextContent,
-                                    () -> chatTags.get(key).TextContent,
-                                    opt -> chatTags.get(key).TextContent = opt
-                            )
-                            .controller(StringControllerBuilder::create)
-                            .build())
-                    .build());
+            configBuilder.group(groupBuilder(key,name));
         });
 
         return configBuilder;
     }
-
-
-
-
-
 
     private ConfigCategory.Builder normalChatTags() {
         ConfigCategory.Builder configBuilder = ConfigCategory.createBuilder()
@@ -243,157 +274,26 @@ public class Config {
 
         ArrayList normalChatTagList = new ArrayList<>();
         normalChatTagList.addAll(DefaultConfig.normalList);
-
-        OptionGroup vipGroup = OptionGroup.createBuilder()
-                .name(Text.literal("⭐ VIP"))
-                .description(OptionDescription.of(Text.literal("VIP Chat Tag")))
-
-                .option(Option.createBuilder(boolean.class)
-                        .name(Text.literal("Vip Enabled"))
-                        .description(OptionDescription.createBuilder()
-                                .text(Text.literal("Toggles weather the VIP tag is shown."))
-                                .text(Text.literal("This also affects the VIP tag and VIP founding badge in player's profiles when you /whois them."))
-                                .text(Text.literal(""))
-                                .build())
-                        .binding(
-                                DefaultConfig.VipEnabled,
-                                () -> VipEnabled,
-                                opt -> VipEnabled = opt
-                        )
-                        .controller(TickBoxControllerBuilder::create)
-                        .build())
-
-                .option(Option.createBuilder(Color.class)
-                        .name(Text.literal("Bracket Color"))
-                        .description(OptionDescription.createBuilder()
-                                .text(Text.literal("Color of brackets"))
-                                .build())
-                        .binding(
-                                new Color(DefaultConfig.oldChatTags.get("vip").BracketColor),
-                                () -> new Color(chatTags.get("vip").BracketColor),
-                                opt -> chatTags.get("vip").BracketColor = opt.getRGB()
-                        )
-                        .controller(ColorControllerBuilder::create)
-                        .build())
-                .option(Option.createBuilder(Color.class)
-                        .name(Text.literal("Symbol Color"))
-                        .description(OptionDescription.createBuilder()
-                                .text(Text.literal("Color of symbols"))
-                                .build())
-                        .binding(
-                                new Color(DefaultConfig.oldChatTags.get("vip").SymbolColor),
-                                () -> new Color(chatTags.get("vip").SymbolColor),
-                                opt -> chatTags.get("vip").SymbolColor = opt.getRGB()
-                        )
-                        .controller(ColorControllerBuilder::create)
-                        .build())
-                .option(Option.createBuilder(Color.class)
-                        .name(Text.literal("Text Content Color"))
-                        .description(OptionDescription.createBuilder()
-                                .text(Text.literal("Color of the main tag text"))
-                                .build())
-                        .binding(
-                                new Color(DefaultConfig.oldChatTags.get("vip").TextColor),
-                                () -> new Color(chatTags.get("vip").TextColor),
-                                opt -> chatTags.get("vip").TextColor = opt.getRGB()
-                        )
-                        .controller(ColorControllerBuilder::create)
-                        .build())
-                .option(Option.createBuilder(String.class)
-                        .name(Text.literal("Symbol"))
-                        .description(OptionDescription.createBuilder()
-                                .text(Text.literal("The main text of the chat tag, also affects the founding badge."))
-                                .build())
-                        .binding(
-                                DefaultConfig.oldChatTags.get("vip").Symbol,
-                                () -> chatTags.get("vip").Symbol,
-                                opt -> chatTags.get("vip").Symbol = opt
-                        )
-                        .controller(StringControllerBuilder::create)
-                        .build())
-                .option(Option.createBuilder(String.class)
-                        .name(Text.literal("Text Content"))
-                        .description(OptionDescription.createBuilder()
-                                .text(Text.literal("The main text content, this only appears in the /whois"))
-                                .build())
-                        .binding(
-                                DefaultConfig.oldChatTags.get("vip").TextContent,
-                                () -> chatTags.get("vip").TextContent,
-                                opt -> chatTags.get("vip").TextContent = opt
-                        )
-                        .controller(StringControllerBuilder::create)
-                        .build())
-                .build();
-
-        configBuilder.group(vipGroup);
-
-        normalChatTagList.forEach(key -> {
+        normalChatTagList.forEach(k -> {
+            String key = (String) k;
             String name = DefaultConfig.newChatTags.get(key).TextContent;
-            configBuilder.group(OptionGroup.createBuilder()
-                    .name(Text.literal(name))
-                    .description(OptionDescription.of(Text.literal(name + " Chat Tag")))
+            configBuilder.group(groupBuilder(key,name));
+        });
 
-                    .option(Option.createBuilder(Color.class)
-                            .name(Text.literal("Bracket Color"))
-                            .description(OptionDescription.createBuilder()
-                                    .text(Text.literal("Color of brackets"))
-                                    .build())
-                            .binding(
-                                    new Color(DefaultConfig.oldChatTags.get(key).BracketColor),
-                                    () -> new Color(chatTags.get(key).BracketColor),
-                                    opt -> chatTags.get(key).BracketColor = opt.getRGB()
-                            )
-                            .controller(ColorControllerBuilder::create)
-                            .build())
-                    .option(Option.createBuilder(Color.class)
-                            .name(Text.literal("Symbol Color"))
-                            .description(OptionDescription.createBuilder()
-                                    .text(Text.literal("Color of symbols"))
-                                    .build())
-                            .binding(
-                                    new Color(DefaultConfig.oldChatTags.get(key).SymbolColor),
-                                    () -> new Color(chatTags.get(key).SymbolColor),
-                                    opt -> chatTags.get(key).SymbolColor = opt.getRGB()
-                            )
-                            .controller(ColorControllerBuilder::create)
-                            .build())
-                    .option(Option.createBuilder(Color.class)
-                            .name(Text.literal("Text Content Color"))
-                            .description(OptionDescription.createBuilder()
-                                    .text(Text.literal("Color of the main tag text"))
-                                    .build())
-                            .binding(
-                                    new Color(DefaultConfig.oldChatTags.get(key).TextColor),
-                                    () -> new Color(chatTags.get(key).TextColor),
-                                    opt -> chatTags.get(key).TextColor = opt.getRGB()
-                            )
-                            .controller(ColorControllerBuilder::create)
-                            .build())
-                    .option(Option.createBuilder(String.class)
-                            .name(Text.literal("Symbol"))
-                            .description(OptionDescription.createBuilder()
-                                    .text(Text.literal("Symbol(s) that go on the left and right side of the main text content"))
-                                    .build())
-                            .binding(
-                                    DefaultConfig.oldChatTags.get(key).Symbol,
-                                    () -> chatTags.get(key).Symbol,
-                                    opt -> chatTags.get(key).Symbol = opt
-                            )
-                            .controller(StringControllerBuilder::create)
-                            .build())
-                    .option(Option.createBuilder(String.class)
-                            .name(Text.literal("Text Content"))
-                            .description(OptionDescription.createBuilder()
-                                    .text(Text.literal("The main text of the tag"))
-                                    .build())
-                            .binding(
-                                    DefaultConfig.oldChatTags.get(key).TextContent,
-                                    () -> chatTags.get(key).TextContent,
-                                    opt -> chatTags.get(key).TextContent = opt
-                            )
-                            .controller(StringControllerBuilder::create)
-                            .build())
-                    .build());
+        return configBuilder;
+    }
+
+    private ConfigCategory.Builder specialChatTags() {
+        ConfigCategory.Builder configBuilder = ConfigCategory.createBuilder()
+                .name(Text.literal("Special Chat Tags"))
+                .tooltip(Text.literal("Modify the special chat tags."));
+
+        ArrayList specialChatTagList = new ArrayList<>();
+        specialChatTagList.addAll(DefaultConfig.specialList);
+        specialChatTagList.forEach(k -> {
+            String key = (String) k;
+            String name = DefaultConfig.newChatTags.get(key).TextContent;
+            configBuilder.group(groupBuilder(key,name));
         });
 
         return configBuilder;

@@ -1,6 +1,7 @@
 package dev.fire;
 
 import dev.fire.config.ChatTag;
+import dev.fire.config.MiniMessageChatTag;
 import net.minecraft.network.message.SentMessage;
 import net.minecraft.text.*;
 import dev.fire.config.Config;
@@ -159,27 +160,40 @@ public class TextUtil {
         for (Map.Entry<String, ChatTag> entry : DefaultConfig.oldChatTags.entrySet()) {
             String key = entry.getKey();
             ChatTag chattag = entry.getValue();
-            ChatTag custom = c.chatTags.get(key);
+            MiniMessageChatTag custom = c.chatTags.get(key);
             ChatTag replacetag = DefaultConfig.newChatTags.get(key);
 
             if (!Objects.equals(key, "vip")) {
 
-                text = replaceTextInternal(text, getCustomTag(replacetag, false, false), getCustomTag(custom, false, false), false);
-                text = replaceTextInternal(text, getCustomTag(replacetag, false, true), getCustomTag(custom, false, false), false);
+                text = replaceTextInternal(text, getCustomTag(replacetag, false, false), custom.getAsFormatted(), false);
+                text = replaceTextInternal(text, getCustomTag(replacetag, false, true), custom.getAsFormatted(), false);
+
 
                 // replace shortened chat tags and tab list for normal tags
                 boolean return_empty = !c.ShortenedChatTags && !isTabList;
-                text = replaceTextInternal(text, getShortCustomTag(replacetag, isTabList, false),  getShortCustomTag(custom, isTabList, return_empty), false);
+                Text replace;
+                if (return_empty) {
+                    replace = Text.empty();
+                } else {
+                    replace = custom.getAsShortFormatted();
+                    if (isTabList) replace = replace.copy().append(Text.literal(" "));
+                }
+                text = replaceTextInternal(text, getShortCustomTag(replacetag, isTabList, false),  replace, false);
+
+
 
                 // check if its the tab list and if its a staff tag (staff tags in the tab list are displayed fully but with an add_space, different from above)
                 if (isTabList) {
                     if (DefaultConfig.staffList.contains(key)) {
-                        text = replaceTextInternal(text, getCustomTag(replacetag, true, false), getCustomTag(custom, true, false), false);
+                        text = replaceTextInternal(text, getCustomTag(replacetag, true, false),  custom.getAsFormatted().copy().append(Text.literal(" ")), false);
                     }
                 }
 
+
+
             }
         }
+        /*
 
         // replace profile line and arrow colors
         for (String key : DefaultConfig.normalList) {
@@ -217,6 +231,8 @@ public class TextUtil {
                             .withColor(custom_vip.SymbolColor))))
                     , false);
         }
+
+         */
         return text;
     }
 
