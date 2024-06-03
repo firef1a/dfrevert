@@ -3,16 +3,19 @@ package dev.fire.config;
 import com.google.gson.*;
 import dev.fire.DFrevert;
 import dev.fire.FileManager;
+import dev.fire.utils.ChatTag;
+import dev.fire.utils.DfrevertException;
+import dev.fire.utils.MiniMessageChatTag;
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.*;
 import net.minecraft.text.Text;
 
-import java.awt.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Config {
     private static Config instance;
@@ -32,7 +35,22 @@ public class Config {
         for (Map.Entry<String, ChatTag> entry : map.entrySet()) {
             String key = entry.getKey();
             ChatTag value = entry.getValue();
-            new_map.put(key, value.toMiniMessageClass());
+
+            MiniMessageChatTag mmobj = value.toMiniMessageClass();
+            if (Objects.equals(key, "vip")) {
+                int bracketColor = DefaultConfig.newChatTags.get("vip").BracketColor;
+                int symbolColor = DefaultConfig.newChatTags.get("vip").SymbolColor;
+
+                mmobj.leftvalue = ChatTag.convertStringWithColorToMiniMessage("[", bracketColor);
+                mmobj.mainvalue = ChatTag.convertStringWithColorToMiniMessage("⭐", symbolColor);
+                mmobj.rightvalue = ChatTag.convertStringWithColorToMiniMessage("]", bracketColor);
+
+                mmobj.shortvalue =
+                        ChatTag.convertStringWithColorToMiniMessage("[", bracketColor) +
+                        ChatTag.convertStringWithColorToMiniMessage("VIP", symbolColor) +
+                        ChatTag.convertStringWithColorToMiniMessage("]", bracketColor);
+            }
+            new_map.put(key, mmobj);
         }
         return new_map;
     }
@@ -181,8 +199,8 @@ public class Config {
                                 .build())
                         .binding(
                                 DefaultConfig.oldChatTags.get(key).toShortValue(),
-                                () -> chatTags.get(key).shortValue,
-                                opt -> chatTags.get(key).shortValue = opt
+                                () -> chatTags.get(key).shortvalue,
+                                opt -> chatTags.get(key).shortvalue = opt
                         )
                         .controller(StringControllerBuilder::create)
                         .build())

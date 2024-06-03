@@ -1,13 +1,9 @@
-package dev.fire.config;
+package dev.fire.utils;
 
 import dev.fire.DFrevert;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.minecraft.text.*;
 
 import java.awt.*;
-import java.util.ArrayList;
 
 public class MiniMessage {
     public static Text format(String input, boolean keep_minimessage_tags) {
@@ -135,7 +131,7 @@ public class MiniMessage {
     public static int parseIntFromHex(String hexString) {
         return Integer.parseInt(hexString, 16);
     }
-    public String parseHexFromInt(String string, int color){
+    public static String parseHexFromInt(String string, int color){
         Color c = new Color(color);
         int r = c.getRed();
         int g = c.getGreen();

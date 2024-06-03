@@ -1,6 +1,6 @@
 package dev.fire.config;
 
-import net.minecraft.text.Text;
+import dev.fire.utils.ChatTag;
 
 import java.util.*;
 

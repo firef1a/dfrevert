@@ -1,12 +1,9 @@
-package dev.fire.config;
+package dev.fire.utils;
 
 import com.google.gson.JsonObject;
-import net.minecraft.network.message.SentMessage;
-import net.minecraft.text.Text;
 
 import java.awt.*;
 import java.io.Serializable;
-import java.util.Map;
 
 public class ChatTag implements Serializable {
     public int BracketColor;
@@ -69,19 +66,16 @@ public class ChatTag implements Serializable {
     }
 
     public MiniMessageChatTag toMiniMessageClass() {
-        String minimessage = "";
-
         return new MiniMessageChatTag(this);
     }
 
-    private String convertStringWithColorToMiniMessage(String string, int color){
+    public static String convertStringWithColorToMiniMessage(String string, int color){
         Color c = new Color(color);
         int r = c.getRed();
         int g = c.getGreen();
         int b = c.getBlue();
         String hex = String.format("#%02x%02x%02x", r, g, b);
-        String minimessage = "<" + hex + ">" + string + "</" + hex + ">";
-        return minimessage;
+        return "<" + hex + ">" + string + "</" + hex + ">";
     }
 
 }

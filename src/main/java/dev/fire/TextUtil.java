@@ -1,8 +1,7 @@
 package dev.fire;
 
-import dev.fire.config.ChatTag;
-import dev.fire.config.MiniMessageChatTag;
-import net.minecraft.network.message.SentMessage;
+import dev.fire.utils.ChatTag;
+import dev.fire.utils.MiniMessageChatTag;
 import net.minecraft.text.*;
 import dev.fire.config.Config;
 import dev.fire.config.DefaultConfig;
@@ -193,46 +192,68 @@ public class TextUtil {
 
             }
         }
-        /*
+
 
         // replace profile line and arrow colors
         for (String key : DefaultConfig.normalList) {
+
             ChatTag normal = DefaultConfig.newChatTags.get(key);
-            ChatTag custom = c.chatTags.get(key);
+            MiniMessageChatTag custom = c.chatTags.get(key);
 
-            text = replaceTextInternal(text, getProfileLine(normal.TextColor,false), getProfileLine(custom.TextColor,false), false);
-            text = replaceTextInternal(text, getProfileLine(normal.TextColor, true), getProfileLine(custom.TextColor,true), false);
+            int color;
+            TextColor colorObj = null;
 
-            text = replaceTextInternal(text, getProfileArrow(normal.TextColor),   getProfileArrow(custom.TextColor), false);
+            if (!custom.getAsFormatted(custom.mainvalue).getSiblings().isEmpty()) {
+                colorObj = custom.getAsFormatted(custom.mainvalue).getSiblings().get(0).getStyle().getColor();
+            }
+            if (colorObj == null) {
+                //color = DefaultConfig.newChatTags.get(key).TextColor;
+                color = 0xffffff;
+            } else {
+                color = colorObj.getRgb();
+            }
+
+            // replace
+            text = replaceTextInternal(text, getProfileLine(normal.TextColor,false), getProfileLine(color,false), false);
+            text = replaceTextInternal(text, getProfileLine(normal.TextColor, true), getProfileLine(color,true), false);
+
+            text = replaceTextInternal(text, getProfileArrow(normal.TextColor),   getProfileArrow(color), false);
 
         }
 
         // vipenabled / disabled logic
-        ChatTag custom_vip = c.chatTags.get("vip");
+        MiniMessageChatTag custom_vip = c.chatTags.get("vip");
+        int color;
+        TextColor colorObj = null;
+        
+        if (!custom_vip.getAsFormatted(custom_vip.mainvalue).getSiblings().isEmpty()) {
+            colorObj = custom_vip.getAsFormatted(custom_vip.mainvalue).getSiblings().get(0).getStyle().getColor();
+        }
+        if (colorObj == null) {
+            //color = DefaultConfig.newChatTags.get(key).TextColor;
+            color = 0xffffff;
+        } else {
+            color = colorObj.getRgb();
+        }
         if (!c.VipEnabled) {
             text = replaceTextInternal(text, VIP_PREFIX, Text.empty(), true);
             text = replaceTextInternal(text, VIP_WHOIS, Text.empty(), false);
             text = replaceTextInternal(text, FOUNDING_BADGE, Text.empty(), false);
         } else {
-            text = replaceTextInternal(text, VIP_PREFIX, Text.empty()
-                    .append(Text.literal("[").withColor(custom_vip.BracketColor))
-                    .append(Text.literal(custom_vip.Symbol).withColor(custom_vip.SymbolColor))
-                    .append(Text.literal("]").withColor(custom_vip.BracketColor)),
-                    false);
-            text = replaceTextInternal(text, VIP_WHOIS, Text.empty()
-                            .append(Text.literal("[").withColor(custom_vip.BracketColor))
-                            .append(Text.literal(custom_vip.TextContent).withColor(custom_vip.TextColor))
-                            .append(Text.literal("]").withColor(custom_vip.BracketColor)),
-                    true);
-            text = replaceTextInternal(text, FOUNDING_BADGE, Text.literal(custom_vip.Symbol+" ")
-                    .styled(style -> style.withColor(custom_vip.SymbolColor)
+            text = replaceTextInternal(text, VIP_PREFIX, custom_vip.getAsFormatted(), false);
+            text = replaceTextInternal(text, VIP_WHOIS, custom_vip.getAsShortFormatted(), true);
+
+            text = replaceTextInternal(text, FOUNDING_BADGE, Text.literal("⭐ ")
+                    .styled(style -> style.withColor(color)
                     .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                             Text.literal("Founding VIP")
-                            .withColor(custom_vip.SymbolColor))))
+                            .withColor(color))))
                     , false);
+
+
         }
 
-         */
+
         return text;
     }
 

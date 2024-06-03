@@ -1,4 +1,4 @@
-package dev.fire.config;
+package dev.fire.utils;
 
 import java.util.ArrayList;
 
