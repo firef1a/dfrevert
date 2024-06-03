@@ -1,5 +1,6 @@
 # DF Revert
-A client side mod for fabric that allows you to customize rank tags on DiamondFire
+A client side mod for the DiamondFire Minecraft server for customizing rank tags.
+
 ## What does this mod do?
 Replaces the **TERRIBLE** and **UGLY** _new rank tags_ 👎👎LLLL with the **AMAZING** and **BEAUTIFUL** _old chat tags_ (very W) 🔥, or you can replace the rank tags with your own colors, text, and symbols 🌈!!!
 
