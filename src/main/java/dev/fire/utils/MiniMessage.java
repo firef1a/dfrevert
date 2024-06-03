@@ -1,11 +1,35 @@
 package dev.fire.utils;
 
 import dev.fire.DFrevert;
+import dev.fire.config.DefaultConfig;
 import net.minecraft.text.*;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.util.Map.entry;
 
 public class MiniMessage {
+    public static Map<String, String> map_hex_colors = Map.ofEntries(
+            entry("dark_red", "#AA0000"),
+            entry("red", "#FF5555"),
+            entry("gold", "#FFAA00"),
+            entry("yellow", "#FFFF55"),
+            entry("dark_green", "#00AA00"),
+            entry("green", "#55FF55"),
+            entry("aqua", "#55FFFF"),
+            entry("dark_aqua", "#00AAAA"),
+            entry("dark_blue", "#0000AA"),
+            entry("blue", "#5555FF"),
+            entry("light_purple", "#FF55FF"),
+            entry("dark_purple", "#AA00AA"),
+            entry("white", "#FFFFFF"),
+            entry("gray", "#AAAAAA"),
+            entry("dark_gray", "#555555"),
+            entry("black", "#000000")
+    );
+
     public static Text format(String input, boolean keep_minimessage_tags) {
         MutableText text = Text.empty();
 
@@ -51,6 +75,20 @@ public class MiniMessage {
                     if (formatting.equals("strikethrough") || formatting.equals("strike") || formatting.equals("str") || formatting.equals("&m")) is_strikethrough = true;
                     if (formatting.equals("obfuscated") || formatting.equals("obf") || formatting.equals("o") || formatting.equals("&k")) is_obfuscated = true;
                     if (formatting.startsWith("#") && formatting.length() > 1) is_color = true;
+
+
+
+                    if (!is_color) {
+                        for (Map.Entry<String, String> entry : map_hex_colors.entrySet()) {
+                            String k = entry.getKey();
+                            String v = entry.getValue();
+                            if (formatting.equals(k)) {
+                                formatting = v;
+                                is_color = true;
+                                break;
+                            }
+                        }
+                    }
 
                     // add /remove colors from stack
                     if (is_color) {
@@ -125,8 +163,6 @@ public class MiniMessage {
             return text;
         }
     }
-
-
 
     public static int parseIntFromHex(String hexString) {
         return Integer.parseInt(hexString, 16);
