@@ -3,7 +3,9 @@ package dev.fire.utils;
 import com.google.gson.JsonObject;
 import net.minecraft.text.*;
 
-public class MiniMessageChatTag {
+import java.io.Serializable;
+
+public class MiniMessageChatTag implements Serializable {
     public String mainvalue;
     public String leftvalue;
     public String rightvalue;

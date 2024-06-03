@@ -27,7 +27,7 @@ public class Config {
     public boolean DebugMode = DefaultConfig.DebugMode;
     public boolean VipEnabled = true;
 
-    public Map<String, MiniMessageChatTag> chatTags = convertToMinimessage(DefaultConfig.oldChatTags);
+    public Map<String, MiniMessageChatTag> chatTags = Map.copyOf(convertToMinimessage(DefaultConfig.oldChatTags));
 
     public static Map<String, MiniMessageChatTag> convertToMinimessage(Map<String, ChatTag> map) {
         Map<String, MiniMessageChatTag> new_map = new HashMap<String, MiniMessageChatTag>();
@@ -52,7 +52,7 @@ public class Config {
             }
             new_map.put(key, mmobj);
         }
-        return new_map;
+        return Map.copyOf(new_map);
     }
 
     public Config() { }
@@ -86,17 +86,15 @@ public class Config {
                 });
 
                 Map<String, MiniMessageChatTag> copy_chatmap = Map.copyOf(chattaghashmap);
-
-                if (copy_chatmap.size() != DefaultConfig.newChatTags.size()) {
-                    throw new DfrevertException("Invalid Config!");
-                }
-                //instance.chatTags = copy_chatmap;
+                instance.chatTags = copy_chatmap;
 
                 // load primitives
                 instance.VipEnabled = object.get("VipEnabled").getAsBoolean();
                 instance.ShortenedChatTags =  object.get("ShortenedChatTags").getAsBoolean();
                 instance.DisableMod = object.get("DisableMod").getAsBoolean();
                 instance.DebugMode = object.get("DebugMode").getAsBoolean();
+
+                DFrevert.LOGGER.info("Successfully loaded config!");
 
             } catch (Exception exception) {
                 DFrevert.LOGGER.info("Config didn't load: " + exception);
