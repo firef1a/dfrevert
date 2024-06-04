@@ -39,21 +39,27 @@ public class Config {
 
             MiniMessageChatTag mmobj = value.toMiniMessageClass();
             if (Objects.equals(key, "vip")) {
-                int bracketColor = DefaultConfig.newChatTags.get("vip").BracketColor;
-                int symbolColor = DefaultConfig.newChatTags.get("vip").SymbolColor;
-
-                mmobj.mainvalue = ChatTag.convertStringWithColorToMiniMessage("[", bracketColor) +
-                                  ChatTag.convertStringWithColorToMiniMessage("⭐", symbolColor) +
-                                  ChatTag.convertStringWithColorToMiniMessage("]", bracketColor);
-
-                mmobj.shortvalue =
-                        ChatTag.convertStringWithColorToMiniMessage("[", bracketColor) +
-                        ChatTag.convertStringWithColorToMiniMessage("VIP", symbolColor) +
-                        ChatTag.convertStringWithColorToMiniMessage("]", bracketColor);
+                mmobj.mainvalue = getVipMain();
+                mmobj.shortvalue =getVipShort();
             }
             new_map.put(key, mmobj);
         }
         return Map.copyOf(new_map);
+    }
+
+    public static String getVipMain() {
+        int bracketColor = DefaultConfig.newChatTags.get("vip").BracketColor;
+        int symbolColor = DefaultConfig.newChatTags.get("vip").SymbolColor;
+        return ChatTag.convertStringWithColorToMiniMessage("[", bracketColor) +
+                ChatTag.convertStringWithColorToMiniMessage("⭐", symbolColor) +
+                ChatTag.convertStringWithColorToMiniMessage("]", bracketColor);
+    }
+    public static String getVipShort() {
+        int bracketColor = DefaultConfig.newChatTags.get("vip").BracketColor;
+        int symbolColor = DefaultConfig.newChatTags.get("vip").SymbolColor;
+        return ChatTag.convertStringWithColorToMiniMessage("[", bracketColor) +
+                ChatTag.convertStringWithColorToMiniMessage("VIP", symbolColor) +
+                ChatTag.convertStringWithColorToMiniMessage("]", bracketColor);
     }
 
     public Config() { }
@@ -152,33 +158,60 @@ public class Config {
 
 
     private OptionGroup.Builder groupBuilder(String key, String name) {
-        return OptionGroup.createBuilder()
+        String mainDefault = DefaultConfig.oldChatTags.get(key).toMainMiniMessage();
+        String shortDefault = DefaultConfig.oldChatTags.get(key).toShortValue();
+        if (Objects.equals(key, "vip")) {
+            mainDefault = getVipMain();
+            shortDefault = getVipShort();
+        }
+        OptionGroup.Builder optionGroup = OptionGroup.createBuilder()
                 .name(Text.literal(name))
-                .description(OptionDescription.of(Text.literal(name + " Chat Tag")))
-                .option(Option.createBuilder(String.class)
-                        .name(Text.literal("Main Text Value"))
-                        .description(OptionDescription.createBuilder()
-                                .text(Text.literal("Formatted in MiniMessage"))
-                                .build())
-                        .binding(
-                                DefaultConfig.oldChatTags.get(key).toMainMiniMessage(),
-                                () -> chatTags.get(key).mainvalue,
-                                opt -> chatTags.get(key).mainvalue = opt
-                        )
-                        .controller(StringControllerBuilder::create)
-                        .build())
-                .option(Option.createBuilder(String.class)
-                        .name(Text.literal("Short Tag Value"))
-                        .description(OptionDescription.createBuilder()
-                                .text(Text.literal("Defines what the tag looks like when its compressed"))
-                                .build())
-                        .binding(
-                                DefaultConfig.oldChatTags.get(key).toShortValue(),
-                                () -> chatTags.get(key).shortvalue,
-                                opt -> chatTags.get(key).shortvalue = opt
-                        )
-                        .controller(StringControllerBuilder::create)
-                        .build());
+                .description(OptionDescription.of(Text.literal(name + " Chat Tag")));
+        if (key == "vip") {
+            optionGroup.option(Option.createBuilder(boolean.class)
+                    .name(Text.literal("Vip Enabled"))
+                    .description(OptionDescription.createBuilder()
+                            .text(Text.literal("Toggles weather the VIP tag is shown."))
+                            .text(Text.literal("This also affects the VIP tag and VIP founding badge in player's profiles when you /whois them."))
+                            .text(Text.literal(""))
+                            .build())
+                    .binding(
+                            DefaultConfig.VipEnabled,
+                            () -> VipEnabled,
+                            opt -> VipEnabled = opt
+                    )
+                    .controller(TickBoxControllerBuilder::create)
+                    .build());
+        }
+
+        optionGroup
+            .option(Option.createBuilder(String.class)
+                    .name(Text.literal("Main Text Value"))
+                    .description(OptionDescription.createBuilder()
+                            .text(Text.literal("Formatted in MiniMessage"))
+                            .build())
+                    .binding(
+                            mainDefault,
+                            () -> chatTags.get(key).mainvalue,
+                            opt -> chatTags.get(key).mainvalue = opt
+                    )
+                    .controller(StringControllerBuilder::create)
+                    .build())
+            .option(Option.createBuilder(String.class)
+                    .name(Text.literal("Short Tag Value"))
+                    .description(OptionDescription.createBuilder()
+                            .text(Text.literal("Defines what the tag looks like when its compressed"))
+                            .build())
+                    .binding(
+                            shortDefault,
+                            () -> chatTags.get(key).shortvalue,
+                            opt -> chatTags.get(key).shortvalue = opt
+                    )
+                    .controller(StringControllerBuilder::create)
+                    .build());
+
+        return optionGroup;
+
 
 
     }
@@ -187,21 +220,7 @@ public class Config {
     private ConfigCategory.Builder miscCategory() {
         return ConfigCategory.createBuilder()
                 .name(Text.literal("Misc. Toggles"))
-                .tooltip(Text.literal("Toggle visibility of chat tags."))
-                .option(Option.createBuilder(boolean.class)
-                        .name(Text.literal("Vip Enabled"))
-                        .description(OptionDescription.createBuilder()
-                                .text(Text.literal("Toggles weather the VIP tag is shown."))
-                                .text(Text.literal("This also affects the VIP tag and VIP founding badge in player's profiles when you /whois them."))
-                                .text(Text.literal(""))
-                                .build())
-                        .binding(
-                                DefaultConfig.VipEnabled,
-                                () -> VipEnabled,
-                                opt -> VipEnabled = opt
-                        )
-                        .controller(TickBoxControllerBuilder::create)
-                        .build())
+                .tooltip(Text.literal("Some random options."))
                 .option(Option.createBuilder(boolean.class)
                         .name(Text.literal("Disable Mod"))
                         .description(OptionDescription.createBuilder()
@@ -251,9 +270,7 @@ public class Config {
         staffChatTagList.forEach(k -> {
             String key = (String) k;
             String name = DefaultConfig.newChatTags.get(key).TextContent;
-            if (key == "emeritus") {
-                name = "Emeritus";
-            }
+
 
             OptionGroup.Builder builder = groupBuilder(key,name);
             configBuilder.group(builder.build());
@@ -302,6 +319,9 @@ public class Config {
         specialChatTagList.forEach(k -> {
             String key = (String) k;
             String name = DefaultConfig.newChatTags.get(key).TextContent;
+            if (Objects.equals(key, "emeritus")) {
+                name = "Emeritus";
+            }
 
             OptionGroup.Builder builder = groupBuilder(key,name);
             if (Objects.equals(key, "vip")) {

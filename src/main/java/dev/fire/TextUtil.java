@@ -158,7 +158,6 @@ public class TextUtil {
 
         for (Map.Entry<String, ChatTag> entry : DefaultConfig.oldChatTags.entrySet()) {
             String key = entry.getKey();
-            ChatTag chattag = entry.getValue();
             MiniMessageChatTag custom = c.chatTags.get(key);
             ChatTag replacetag = DefaultConfig.newChatTags.get(key);
 
