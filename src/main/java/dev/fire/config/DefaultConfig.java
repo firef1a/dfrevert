@@ -34,7 +34,8 @@ public class DefaultConfig {
             entry("jrhelper",  new ChatTag(0xAAAAAA, 0xAAAAAA, 0x55AAFF, "", "JrHelper", false)),
             entry("emeritus", new ChatTag(0xFFAA00, 0xFFAA00, 0x2AD4D4, "", "Retired", false)),
             entry("retired",   new ChatTag(0x005555, 0x005555, 0x00AAAA, "", "Retired", false)),
-            entry("builder",   new ChatTag(0x80552A, 0x80552A, 0xFFAA00, "", "Builder", false))
+            entry("builder",   new ChatTag(0x80552A, 0x80552A, 0xFFAA00, "", "Builder", false)),
+            entry("sponsor", new ChatTag(0x7FFF7F, 0xAAFFAA, 0xAAFFAA, "", "Sponsor", false))
     );
 
     public static Map<String, ChatTag> newChatTags = Map.ofEntries(
@@ -55,17 +56,18 @@ public class DefaultConfig {
             entry("jrhelper",  new ChatTag(0xAAAAAA, 0xAAAAAA, 0x55AAFF, "", "JrHelper", false)),
             entry("emeritus",  new ChatTag(0xFFAA00, 0xFFAA00, 0x2AD4D4, "", "Retired", false)),
             entry("retired",   new ChatTag(0x005555, 0x005555, 0x00AAAA, "", "Retired", false)),
-            entry("builder",   new ChatTag(0x80552A, 0x80552A, 0xFFAA00, "", "Builder", false))
+            entry("builder",   new ChatTag(0x80552A, 0x80552A, 0xFFAA00, "", "Builder", false)),
+            entry("sponsor", new ChatTag(0x7FFF7F, 0xAAFFAA, 0xAAFFAA, "", "Sponsor", false))
     );
 
-    public static ArrayList<String> normalList = new ArrayList<String>(Arrays.asList(
+    public static ArrayList<String> normalList = new ArrayList<String>(List.of(
             "overlord",
             "mythic",
             "emperor",
             "noble"
     ));
 
-    public static ArrayList<String> staffList = new ArrayList<String>(Arrays.asList(
+    public static ArrayList<String> staffList = new ArrayList<String>(List.of(
             "owner",
             "admin",
             "dev",
@@ -77,10 +79,11 @@ public class DefaultConfig {
             "jrhelper"
     ));
 
-    public static ArrayList<String> specialList = new ArrayList<String>(Arrays.asList(
+    public static ArrayList<String> specialList = new ArrayList<String>(List.of(
             "vip",
             "emeritus",
             "retired",
-            "builder"
+            "builder",
+            "sponsor"
     ));
 }

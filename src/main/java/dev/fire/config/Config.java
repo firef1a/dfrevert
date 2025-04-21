@@ -31,7 +31,7 @@ public class Config {
     public Map<String, MiniMessageChatTag> chatTags = Map.copyOf(convertToMinimessage(DefaultConfig.oldChatTags));
 
     public static Map<String, MiniMessageChatTag> convertToMinimessage(Map<String, ChatTag> map) {
-        Map<String, MiniMessageChatTag> new_map = new HashMap<String, MiniMessageChatTag>();
+        Map<String, MiniMessageChatTag> new_map = new HashMap<>();
 
         for (Map.Entry<String, ChatTag> entry : map.entrySet()) {
             String key = entry.getKey();
@@ -40,7 +40,12 @@ public class Config {
             MiniMessageChatTag mmobj = value.toMiniMessageClass();
             if (Objects.equals(key, "vip")) {
                 mmobj.mainvalue = getVipMain();
-                mmobj.shortvalue =getVipShort();
+                mmobj.shortvalue = getVipShort();
+            }
+
+            if (Objects.equals(key, "sponsor")) {
+                mmobj.mainvalue = getSponsorMain();
+                mmobj.shortvalue = getSponsorShort();
             }
             new_map.put(key, mmobj);
         }
@@ -54,11 +59,28 @@ public class Config {
                 ChatTag.convertStringWithColorToMiniMessage("⭐", symbolColor) +
                 ChatTag.convertStringWithColorToMiniMessage("]", bracketColor);
     }
+
     public static String getVipShort() {
         int bracketColor = DefaultConfig.newChatTags.get("vip").BracketColor;
         int symbolColor = DefaultConfig.newChatTags.get("vip").SymbolColor;
         return ChatTag.convertStringWithColorToMiniMessage("[", bracketColor) +
                 ChatTag.convertStringWithColorToMiniMessage("VIP", symbolColor) +
+                ChatTag.convertStringWithColorToMiniMessage("]", bracketColor);
+    }
+
+    public static String getSponsorShort() {
+        int bracketColor = DefaultConfig.newChatTags.get("sponsor").BracketColor;
+        int textColor = DefaultConfig.newChatTags.get("sponsor").TextColor;
+        return ChatTag.convertStringWithColorToMiniMessage("[", bracketColor) +
+                ChatTag.convertStringWithColorToMiniMessage("◇", textColor) +
+                ChatTag.convertStringWithColorToMiniMessage("]", bracketColor);
+    }
+
+    public static String getSponsorMain() {
+        int bracketColor = DefaultConfig.newChatTags.get("sponsor").BracketColor;
+        int symbolColor = DefaultConfig.newChatTags.get("sponsor").SymbolColor;
+        return ChatTag.convertStringWithColorToMiniMessage("[", bracketColor) +
+                ChatTag.convertStringWithColorToMiniMessage("◇", symbolColor) +
                 ChatTag.convertStringWithColorToMiniMessage("]", bracketColor);
     }
 
@@ -164,10 +186,15 @@ public class Config {
             mainDefault = getVipMain();
             shortDefault = getVipShort();
         }
+
+        if (Objects.equals(key, "sponsor")) {
+            mainDefault = getSponsorMain();
+            shortDefault = getSponsorShort();
+        }
         OptionGroup.Builder optionGroup = OptionGroup.createBuilder()
                 .name(Text.literal(name))
                 .description(OptionDescription.of(Text.literal(name + " Chat Tag")));
-        if (key == "vip") {
+        if (key.equals("vip")) {
             optionGroup.option(Option.createBuilder(boolean.class)
                     .name(Text.literal("Vip Enabled"))
                     .description(OptionDescription.createBuilder()
@@ -264,15 +291,13 @@ public class Config {
                 .name(Text.literal("Staff Chat Tags"))
                 .tooltip(Text.literal("Modify the Staff chat tags."));
 
-        ArrayList staffChatTagList = new ArrayList<>();
-        staffChatTagList.addAll(DefaultConfig.staffList);
+        ArrayList<String> staffChatTagList = new ArrayList<>(DefaultConfig.staffList);
 
         staffChatTagList.forEach(k -> {
-            String key = (String) k;
-            String name = DefaultConfig.newChatTags.get(key).TextContent;
+            String name = DefaultConfig.newChatTags.get(k).TextContent;
 
 
-            OptionGroup.Builder builder = groupBuilder(key,name);
+            OptionGroup.Builder builder = groupBuilder(k,name);
             configBuilder.group(builder.build());
         });
 
@@ -284,22 +309,20 @@ public class Config {
                 .name(Text.literal("Chat Tags"))
                 .tooltip(Text.literal("Modify the default chat tags."));
 
-        ArrayList normalChatTagList = new ArrayList<>();
-        normalChatTagList.addAll(DefaultConfig.normalList);
+        ArrayList<String> normalChatTagList = new ArrayList<>(DefaultConfig.normalList);
         normalChatTagList.forEach(k -> {
-            String key = (String) k;
-            String name = DefaultConfig.newChatTags.get(key).TextContent;
+            String name = DefaultConfig.newChatTags.get((String) k).TextContent;
 
-            OptionGroup.Builder builder = groupBuilder(key,name);
+            OptionGroup.Builder builder = groupBuilder((String) k,name);
             builder.option(Option.createBuilder(Color.class)
                     .name(Text.literal("Profile Color"))
                     .description(OptionDescription.createBuilder()
                             .text(Text.literal("Color of your /whois, dictated by the highest paid rank you have. ie: Overlord, Mythic, Emperor, or Noble. "))
                             .build())
                     .binding(
-                            new Color(DefaultConfig.oldChatTags.get(key).TextColor),
-                            () -> new Color(chatTags.get(key).ProfileColor),
-                            opt -> chatTags.get(key).ProfileColor = opt.getRGB()
+                            new Color(DefaultConfig.oldChatTags.get((String) k).TextColor),
+                            () -> new Color(chatTags.get((String) k).ProfileColor),
+                            opt -> chatTags.get((String) k).ProfileColor = opt.getRGB()
                     )
                     .controller(ColorControllerBuilder::create)
                     .build());
@@ -314,26 +337,24 @@ public class Config {
                 .name(Text.literal("Special Chat Tags"))
                 .tooltip(Text.literal("Modify the special chat tags."));
 
-        ArrayList specialChatTagList = new ArrayList<>();
-        specialChatTagList.addAll(DefaultConfig.specialList);
+        ArrayList<String> specialChatTagList = new ArrayList<>(DefaultConfig.specialList);
         specialChatTagList.forEach(k -> {
-            String key = (String) k;
-            String name = DefaultConfig.newChatTags.get(key).TextContent;
-            if (Objects.equals(key, "emeritus")) {
+            String name = DefaultConfig.newChatTags.get(k).TextContent;
+            if (Objects.equals(k, "emeritus")) {
                 name = "Emeritus";
             }
 
-            OptionGroup.Builder builder = groupBuilder(key,name);
-            if (Objects.equals(key, "vip")) {
+            OptionGroup.Builder builder = groupBuilder((String) k,name);
+            if (Objects.equals((String) k, "vip")) {
                 builder.option(Option.createBuilder(Color.class)
                         .name(Text.literal("Badge Color"))
                         .description(OptionDescription.createBuilder()
                                 .text(Text.literal("Color of your vip badge ._."))
                                 .build())
                         .binding(
-                                new Color(DefaultConfig.oldChatTags.get(key).TextColor),
-                                () -> new Color(chatTags.get(key).ProfileColor),
-                                opt -> chatTags.get(key).ProfileColor = opt.getRGB()
+                                new Color(DefaultConfig.oldChatTags.get(k).TextColor),
+                                () -> new Color(chatTags.get(k).ProfileColor),
+                                opt -> chatTags.get(k).ProfileColor = opt.getRGB()
                         )
                         .controller(ColorControllerBuilder::create)
                         .build());

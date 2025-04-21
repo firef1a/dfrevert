@@ -20,7 +20,7 @@ public class MiniMessageStyle {
 
     public boolean removeColor(int color) {
         if (this.colorsList.contains(color)) {
-            this.colorsList.remove((Object) Integer.valueOf(color));
+            this.colorsList.remove((Object) color);
             return true;
         } else {
             return false;

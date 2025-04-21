@@ -6,13 +6,12 @@ import net.minecraft.text.*;
 import dev.fire.config.Config;
 import dev.fire.config.DefaultConfig;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class TextUtil {
-    public static final String MOD_NAME = "DFrevert";
-    public static final String MOD_ID = "dfrevert";
-
     private static final Text VIP_PREFIX = Text.empty()
             .append(Text.literal("[").withColor(DefaultConfig.newChatTags.get("vip").BracketColor))
             .append(Text.literal("⭐")
@@ -162,10 +161,10 @@ public class TextUtil {
             ChatTag replacetag = DefaultConfig.newChatTags.get(key);
 
             if (!Objects.equals(key, "vip")) {
+                var formatted = custom.getAsFormatted();
 
-                text = replaceTextInternal(text, getCustomTag(replacetag, false, false), custom.getAsFormatted(), false);
-                text = replaceTextInternal(text, getCustomTag(replacetag, false, true), custom.getAsFormatted(), false);
-
+                text = replaceTextInternal(text, getCustomTag(replacetag, false, false), formatted, false);
+                text = replaceTextInternal(text, getCustomTag(replacetag, false, true), formatted, false);
 
                 // replace shortened chat tags and tab list for normal tags
                 boolean return_empty = !c.ShortenedChatTags && !isTabList;

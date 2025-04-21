@@ -3,7 +3,7 @@
 	"id": "dfrevert",
 	"version": "${version}",
 	"name": "DF Revert",
-	"description": "Reverts chattags to their old/custom colors.",
+	"description": "Allows customization of DiamondFire chat and player list tags.",
 	"authors": [
 		"fire"
 	],
@@ -28,9 +28,9 @@
 		"dfrevert.mixins.json"
 	],
 	"depends": {
-		"fabricloader": ">=0.15.11",
-		"minecraft": "~1.20.4",
-		"java": ">=17",
+		"fabricloader": ">=0.16.14",
+		"minecraft": "~1.21.3",
+		"java": ">=21",
 		"fabric-api": "*",
 		"yet_another_config_lib_v3": "*"
 	},

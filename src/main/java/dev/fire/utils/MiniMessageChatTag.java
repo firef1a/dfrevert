@@ -17,7 +17,7 @@ public class MiniMessageChatTag implements Serializable {
     }
 
     public Text getAsFormatted() {
-        return MiniMessage.format( mainvalue, false);
+        return MiniMessage.format(mainvalue, false);
     }
     public Text getAsFormatted(String input) {
         return MiniMessage.format(input, false);
