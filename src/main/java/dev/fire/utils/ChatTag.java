@@ -12,13 +12,20 @@ public class ChatTag implements Serializable {
     public String Symbol;
     public String TextContent;
     public boolean addBoldSpace;
-    public ChatTag(int bracketcolor, int symbolcolor, int textcolor, String sym, String textcontent, boolean addBoldSpace) {
+    public boolean isEnabled;
+
+    public ChatTag(int bracketcolor, int symbolcolor, int textcolor, String sym, String textcontent, boolean addBoldSpace, boolean isEnabled) {
         this.BracketColor = bracketcolor;
         this.SymbolColor = symbolcolor;
         this.TextColor = textcolor;
         this.Symbol = sym;
         this.TextContent = textcontent;
         this.addBoldSpace = addBoldSpace;
+        this.isEnabled = isEnabled;
+    }
+
+    public ChatTag(int bracketcolor, int symbolcolor, int textcolor, String sym, String textcontent, boolean addBoldSpace) {
+        this(bracketcolor, symbolcolor, textcolor, sym, textcontent, addBoldSpace, true);
     }
 
     public String toJson(){
@@ -29,7 +36,9 @@ public class ChatTag implements Serializable {
         object.addProperty("Symbol", Symbol);
         object.addProperty("TextContent", TextContent);
         object.addProperty("addBoldSpace", addBoldSpace);
+        object.addProperty("isEnabled", isEnabled);
         return object.toString();
+
     }
 
     public String toMainMiniMessage() {

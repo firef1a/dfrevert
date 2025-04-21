@@ -159,6 +159,7 @@ public class TextUtil {
             String key = entry.getKey();
             MiniMessageChatTag custom = c.chatTags.get(key);
             ChatTag replacetag = DefaultConfig.newChatTags.get(key);
+            if (!custom.isEnabled) continue;
 
             if (!Objects.equals(key, "vip")) {
                 var formatted = custom.getAsFormatted();
@@ -197,6 +198,7 @@ public class TextUtil {
 
             ChatTag normal = DefaultConfig.newChatTags.get(key);
             MiniMessageChatTag custom = c.chatTags.get(key);
+            if (!custom.isEnabled) continue;
 
             int color = custom.ProfileColor;
             // replace

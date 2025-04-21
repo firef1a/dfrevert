@@ -9,11 +9,13 @@ public class MiniMessageChatTag implements Serializable {
     public String mainvalue;
     public String shortvalue;
     public int ProfileColor;
+    public boolean isEnabled;
 
     public MiniMessageChatTag(ChatTag chattag) {
         this.mainvalue = chattag.toMainMiniMessage();
         this.shortvalue = chattag.toShortValue();
         this.ProfileColor = chattag.TextColor;
+        this.isEnabled = chattag.isEnabled;;
     }
 
     public Text getAsFormatted() {
@@ -30,6 +32,7 @@ public class MiniMessageChatTag implements Serializable {
         object.addProperty("mainvalue", mainvalue);
         object.addProperty("shortvalue", shortvalue);
         object.addProperty("ProfileColor", ProfileColor);
+        object.addProperty("isEnabled", isEnabled);
         return object.toString();
     }
 }

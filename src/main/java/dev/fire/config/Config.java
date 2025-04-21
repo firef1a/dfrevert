@@ -29,7 +29,6 @@ public class Config {
     public boolean VipEnabled = true;
 
     public Map<String, MiniMessageChatTag> chatTags = Map.copyOf(convertToMinimessage(DefaultConfig.oldChatTags));
-
     public static Map<String, MiniMessageChatTag> convertToMinimessage(Map<String, ChatTag> map) {
         Map<String, MiniMessageChatTag> new_map = new HashMap<>();
 
@@ -72,7 +71,7 @@ public class Config {
         int bracketColor = DefaultConfig.newChatTags.get("sponsor").BracketColor;
         int textColor = DefaultConfig.newChatTags.get("sponsor").TextColor;
         return ChatTag.convertStringWithColorToMiniMessage("[", bracketColor) +
-                ChatTag.convertStringWithColorToMiniMessage("◇", textColor) +
+                ChatTag.convertStringWithColorToMiniMessage("Sponsor", textColor) +
                 ChatTag.convertStringWithColorToMiniMessage("]", bracketColor);
     }
 
@@ -235,7 +234,20 @@ public class Config {
                             opt -> chatTags.get(key).shortvalue = opt
                     )
                     .controller(StringControllerBuilder::create)
+                    .build())
+            .option(Option.createBuilder(Boolean.class)
+                    .name(Text.literal("Enabled"))
+                    .description(OptionDescription.createBuilder()
+                            .text(Text.literal("If disabled, default chat tags will be used instead of the tags above."))
+                            .build())
+                    .binding(
+                            true,
+                            () -> chatTags.get(key).isEnabled,
+                            opt -> chatTags.get(key).isEnabled = opt
+                    )
+                    .controller(BooleanControllerBuilder::create)
                     .build());
+
 
         return optionGroup;
 
