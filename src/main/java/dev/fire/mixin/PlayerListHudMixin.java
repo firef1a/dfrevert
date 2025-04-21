@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerListHud.class)
 public class PlayerListHudMixin {
-    @Inject(method = "getPlayerName*", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "getPlayerName*", at = @At("RETURN"))
     protected void getPlayerName(PlayerListEntry playerListEntry, CallbackInfoReturnable<Text> cir) {
         Text text = cir.getReturnValue();
         //DFrevert.LOGGER.info(String.valueOf(text));

@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(PlayerEntityRenderer.class)
 public class MPlayerEntityRenderer {
-    @ModifyVariable(method = "renderLabelIfPresent*", at = @At("HEAD"), ordinal = 0, argsOnly = true)
+    @ModifyVariable(method = "renderLabelIfPresent*", at = @At("HEAD"), argsOnly = true)
     public Text inject(Text text) {
         //DFrevert.LOGGER.info(String.valueOf(text));
         return TextUtil.replaceTags(text, true);
