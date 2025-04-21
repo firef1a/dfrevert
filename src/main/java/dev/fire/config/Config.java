@@ -4,7 +4,6 @@ import com.google.gson.*;
 import dev.fire.DFrevert;
 import dev.fire.FileManager;
 import dev.fire.utils.ChatTag;
-import dev.fire.utils.DfrevertException;
 import dev.fire.utils.MiniMessageChatTag;
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.*;
@@ -17,18 +16,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Config {
-    private static Config instance;
-    public CharSetOption SaveCharSet = DefaultConfig.SaveCharSet;
-    public CharSetOption FileCharSet = DefaultConfig.FileCharSet;
+    public static CharSetOption SaveCharSet = DefaultConfig.SaveCharSet;
+    public static CharSetOption FileCharSet = DefaultConfig.FileCharSet;
 
-    public boolean ShortenedChatTags = DefaultConfig.ShortenedChatTags;
-    public boolean DisableMod = DefaultConfig.DisableMod;
-    public boolean DebugMode = DefaultConfig.DebugMode;
-    public boolean VipEnabled = true;
+    public static boolean ShortenedChatTags = DefaultConfig.ShortenedChatTags;
+    public static boolean DisableMod = DefaultConfig.DisableMod;
+    public static boolean DebugMode = DefaultConfig.DebugMode;
+    public static boolean VipEnabled = true;
 
-    public Map<String, MiniMessageChatTag> chatTags = Map.copyOf(convertToMinimessage(DefaultConfig.oldChatTags));
+    public static Map<String, MiniMessageChatTag> chatTags = Map.copyOf(convertToMinimessage(DefaultConfig.oldChatTags));
+
     public static Map<String, MiniMessageChatTag> convertToMinimessage(Map<String, ChatTag> map) {
         Map<String, MiniMessageChatTag> new_map = new HashMap<>();
 
@@ -83,62 +83,41 @@ public class Config {
                 ChatTag.convertStringWithColorToMiniMessage("]", bracketColor);
     }
 
-    public Config() { }
-
-    public static Config getConfig() {
-        if (instance == null) {
-            try {
-                instance = new Config();
-
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                JsonObject object = new JsonParser().parse(FileManager.readConfig()).getAsJsonObject();
+    public static void getConfig() {
+        try {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            JsonObject object = new JsonParser().parse(FileManager.readConfig()).getAsJsonObject();
 
 
-                // create chat tags
-                Map<String, MiniMessageChatTag> chattaghashmap = new HashMap<String, MiniMessageChatTag>();
+            // create chat tags
+            Map<String, MiniMessageChatTag> chattaghashmap = new HashMap<String, MiniMessageChatTag>();
 
-                JsonObject map_json_object = new JsonParser().parse(object.get("_JsonChatTags").getAsString()).getAsJsonObject();
+            JsonObject map_json_object = new JsonParser().parse(object.get("_JsonChatTags").getAsString()).getAsJsonObject();
 
-                map_json_object.keySet().forEach(chatkey -> {
-                    try {
-                        JsonElement map_chat_key = map_json_object.get(chatkey);
-                        MiniMessageChatTag new_value = gson.fromJson(map_chat_key.getAsString(), MiniMessageChatTag.class);
-                        chattaghashmap.put(chatkey, new_value);
-                    } catch (Exception exception) {
-                        try {
-                            throw new DfrevertException("Invalid Config!");
-                        } catch (DfrevertException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                });
-
-                Map<String, MiniMessageChatTag> copy_chatmap = Map.copyOf(chattaghashmap);
-                instance.chatTags = copy_chatmap;
-
-                // load primitives
-                instance.VipEnabled = object.get("VipEnabled").getAsBoolean();
-                instance.ShortenedChatTags =  object.get("ShortenedChatTags").getAsBoolean();
-                instance.DisableMod = object.get("DisableMod").getAsBoolean();
-                instance.DebugMode = object.get("DebugMode").getAsBoolean();
-
-                DFrevert.LOGGER.info("Successfully loaded config!");
-
-            } catch (Exception exception) {
-                DFrevert.LOGGER.info("Config didn't load: " + exception);
-                DFrevert.LOGGER.info("Making a new one.");
-                instance = new Config();
-                instance.save();
+            for (String chatkey : map_json_object.keySet()) {
+                JsonElement map_chat_key = map_json_object.get(chatkey);
+                MiniMessageChatTag new_value = gson.fromJson(map_chat_key.getAsString(), MiniMessageChatTag.class);
+                chattaghashmap.put(chatkey, new_value);
             }
+
+            Map<String, MiniMessageChatTag> copy_chatmap = Map.copyOf(chattaghashmap);
+            chatTags = copy_chatmap;
+
+            // load primitives
+            VipEnabled = object.get("VipEnabled").getAsBoolean();
+            ShortenedChatTags =  object.get("ShortenedChatTags").getAsBoolean();
+            DisableMod = object.get("DisableMod").getAsBoolean();
+            DebugMode = object.get("DebugMode").getAsBoolean();
+
+            DFrevert.LOGGER.info("Successfully loaded config!");
+        } catch (Exception exception) {
+            DFrevert.LOGGER.info("Config didn't load: " + exception);
+            DFrevert.LOGGER.info("Making a new one.");
+            chatTags = Map.copyOf(convertToMinimessage(DefaultConfig.oldChatTags));
         }
-        return instance;
     }
 
-    public static void clear() {
-        instance = null;
-    }
-
-    private void save() {
+    private static void save() {
         try {
             JsonObject object = new JsonObject();
 
@@ -163,10 +142,9 @@ public class Config {
         } catch (Exception e) {
             DFrevert.LOGGER.info("Couldn't save config: " + e);
         }
-
     }
 
-    public YetAnotherConfigLib getLibConfig() {
+    public static YetAnotherConfigLib getLibConfig() {
         YetAnotherConfigLib.Builder yacl =
                 YetAnotherConfigLib.createBuilder()
                         .title(Text.literal("Used for narration. Could be used to render a title in the future."))
@@ -174,11 +152,11 @@ public class Config {
                             .category(staffChatTags().build())
                             .category(specialChatTags().build())
                             .category(miscCategory().build());
-        return yacl.save(this::save).build();
+        return yacl.save(Config::save).build();
     }
 
 
-    private OptionGroup.Builder groupBuilder(String key, String name) {
+    private static OptionGroup.Builder groupBuilder(String key, String name) {
         String mainDefault = DefaultConfig.oldChatTags.get(key).toMainMiniMessage();
         String shortDefault = DefaultConfig.oldChatTags.get(key).toShortValue();
         if (Objects.equals(key, "vip")) {
@@ -256,7 +234,7 @@ public class Config {
     }
 
 
-    private ConfigCategory.Builder miscCategory() {
+    private static ConfigCategory.Builder miscCategory() {
         return ConfigCategory.createBuilder()
                 .name(Text.literal("Misc. Toggles"))
                 .tooltip(Text.literal("Some random options."))
@@ -298,7 +276,7 @@ public class Config {
                         .build());
     }
 
-    private ConfigCategory.Builder staffChatTags() {
+    private static ConfigCategory.Builder staffChatTags() {
         ConfigCategory.Builder configBuilder = ConfigCategory.createBuilder()
                 .name(Text.literal("Staff Chat Tags"))
                 .tooltip(Text.literal("Modify the Staff chat tags."));
@@ -316,7 +294,7 @@ public class Config {
         return configBuilder;
     }
 
-    private ConfigCategory.Builder normalChatTags() {
+    private static ConfigCategory.Builder normalChatTags() {
         ConfigCategory.Builder configBuilder = ConfigCategory.createBuilder()
                 .name(Text.literal("Chat Tags"))
                 .tooltip(Text.literal("Modify the default chat tags."));
@@ -344,7 +322,7 @@ public class Config {
         return configBuilder;
     }
 
-    private ConfigCategory.Builder specialChatTags() {
+    private static ConfigCategory.Builder specialChatTags() {
         ConfigCategory.Builder configBuilder = ConfigCategory.createBuilder()
                 .name(Text.literal("Special Chat Tags"))
                 .tooltip(Text.literal("Modify the special chat tags."));

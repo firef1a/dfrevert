@@ -54,7 +54,7 @@ public class FileManager {
         Files.deleteIfExists(path);
         Files.createFile(path);
         if (doCharSet) {
-            Files.write(path, content.getBytes(Config.getConfig().SaveCharSet.charSet), StandardOpenOption.WRITE);
+            Files.write(path, content.getBytes(Config.SaveCharSet.charSet), StandardOpenOption.WRITE);
         } else {
             Files.write(path, content.getBytes(), StandardOpenOption.WRITE);
         }
@@ -74,6 +74,6 @@ public class FileManager {
      * Will load the config if it isn't.
      */
     public static String readFile(String fileName) throws IOException {
-        return readFile(fileName, Config.getConfig().FileCharSet.charSet);
+        return readFile(fileName, Config.FileCharSet.charSet);
     }
 }

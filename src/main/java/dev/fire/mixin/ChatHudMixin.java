@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ChatHudMixin {
     @ModifyVariable(method = "addMessage(Lnet/minecraft/text/Text;)V", at = @At("HEAD"), ordinal = 0, argsOnly = true)
     public Text inject(Text message) {
-        if ( Config.getConfig().DebugMode) { DFrevert.LOGGER.info(String.valueOf(message)); };
+        if ( Config.DebugMode) { DFrevert.LOGGER.info(String.valueOf(message)); };
         return TextUtil.replaceTags(message, false);
     }
 }

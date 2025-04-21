@@ -147,9 +147,7 @@ public class TextUtil {
 
 
     public static Text replaceTags(Text text, boolean isTabList) {
-        Config c = Config.getConfig();
-
-        if (c.DisableMod){
+        if (Config.DisableMod){
             return text;
         }
 
@@ -157,7 +155,7 @@ public class TextUtil {
 
         for (Map.Entry<String, ChatTag> entry : DefaultConfig.oldChatTags.entrySet()) {
             String key = entry.getKey();
-            MiniMessageChatTag custom = c.chatTags.get(key);
+            MiniMessageChatTag custom = Config.chatTags.get(key);
             ChatTag replacetag = DefaultConfig.newChatTags.get(key);
             if (!custom.isEnabled) continue;
 
@@ -168,7 +166,7 @@ public class TextUtil {
                 text = replaceTextInternal(text, getCustomTag(replacetag, false, true), formatted, false);
 
                 // replace shortened chat tags and tab list for normal tags
-                boolean return_empty = !c.ShortenedChatTags && !isTabList;
+                boolean return_empty = !Config.ShortenedChatTags && !isTabList;
                 Text replace;
                 if (return_empty) {
                     replace = Text.empty();
@@ -197,7 +195,7 @@ public class TextUtil {
         for (String key : DefaultConfig.normalList) {
 
             ChatTag normal = DefaultConfig.newChatTags.get(key);
-            MiniMessageChatTag custom = c.chatTags.get(key);
+            MiniMessageChatTag custom = Config.chatTags.get(key);
             if (!custom.isEnabled) continue;
 
             int color = custom.ProfileColor;
@@ -210,10 +208,10 @@ public class TextUtil {
         }
 
         // vipenabled / disabled logic
-        MiniMessageChatTag custom_vip = c.chatTags.get("vip");
+        MiniMessageChatTag custom_vip = Config.chatTags.get("vip");
         int color = custom_vip.ProfileColor;
 
-        if (!c.VipEnabled) {
+        if (!Config.VipEnabled) {
             text = replaceTextInternal(text, VIP_PREFIX, Text.empty(), true);
             text = replaceTextInternal(text, VIP_WHOIS, Text.empty(), false);
             text = replaceTextInternal(text, FOUNDING_BADGE, Text.empty(), false);

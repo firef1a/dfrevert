@@ -2,6 +2,7 @@ package dev.fire;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dev.fire.config.Config;
 import net.fabricmc.api.ModInitializer;
 
 import net.minecraft.client.MinecraftClient;
@@ -17,6 +18,7 @@ public class DFrevert implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		DFrevert.LOGGER.info("So long, and thanks for all the fish!");
+		DFrevert.LOGGER.info("so long, and thanks for all the fish!");
+		Config.getConfig();
 	}
 }
