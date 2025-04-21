@@ -5,7 +5,7 @@
 	"mixins": [
 		"ChatHudMixin",
 		"PlayerListHudMixin",
-		"EntityRendererMixin"
+		"MPlayerEntityRenderer"
 	],
 	"injectors": {
 		"defaultRequire": 1
