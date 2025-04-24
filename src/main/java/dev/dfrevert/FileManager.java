@@ -1,6 +1,6 @@
-package dev.fire;
+package dev.dfrevert;
 
-import dev.fire.config.Config;
+import dev.dfrevert.config.Config;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.File;

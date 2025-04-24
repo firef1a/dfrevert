@@ -1,13 +1,11 @@
-package dev.fire;
+package dev.dfrevert;
 
-import dev.fire.utils.ChatTag;
-import dev.fire.utils.MiniMessageChatTag;
+import dev.dfrevert.config.DefaultConfig;
+import dev.dfrevert.utils.ChatTag;
+import dev.dfrevert.utils.MiniMessageChatTag;
 import net.minecraft.text.*;
-import dev.fire.config.Config;
-import dev.fire.config.DefaultConfig;
+import dev.dfrevert.config.Config;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 

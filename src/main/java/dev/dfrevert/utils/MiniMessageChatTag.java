@@ -1,4 +1,4 @@
-package dev.fire.utils;
+package dev.dfrevert.utils;
 
 import com.google.gson.JsonObject;
 import net.minecraft.text.*;

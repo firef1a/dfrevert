@@ -1,6 +1,6 @@
-package dev.fire.config;
+package dev.dfrevert.config;
 
-import dev.fire.utils.ChatTag;
+import dev.dfrevert.utils.ChatTag;
 
 import java.util.*;
 

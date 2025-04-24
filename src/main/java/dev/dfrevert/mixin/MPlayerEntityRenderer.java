@@ -1,7 +1,6 @@
-package dev.fire.mixin;
+package dev.dfrevert.mixin;
 
-import dev.fire.DFrevert;
-import dev.fire.TextUtil;
+import dev.dfrevert.TextUtil;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;

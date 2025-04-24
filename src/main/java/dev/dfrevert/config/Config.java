@@ -1,10 +1,10 @@
-package dev.fire.config;
+package dev.dfrevert.config;
 
 import com.google.gson.*;
-import dev.fire.DFrevert;
-import dev.fire.FileManager;
-import dev.fire.utils.ChatTag;
-import dev.fire.utils.MiniMessageChatTag;
+import dev.dfrevert.DFrevert;
+import dev.dfrevert.FileManager;
+import dev.dfrevert.utils.ChatTag;
+import dev.dfrevert.utils.MiniMessageChatTag;
 import dev.isxander.yacl3.api.*;
 import dev.isxander.yacl3.api.controller.*;
 import net.minecraft.text.Text;
@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Config {
     public static CharSetOption SaveCharSet = DefaultConfig.SaveCharSet;

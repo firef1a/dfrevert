@@ -1,4 +1,4 @@
-package dev.fire.utils;
+package dev.dfrevert.utils;
 
 public class DfrevertException extends Exception {
     public DfrevertException(String errorMessage) {

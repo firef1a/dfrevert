@@ -1,11 +1,9 @@
-package dev.fire.utils;
+package dev.dfrevert.utils;
 
-import dev.fire.DFrevert;
-import dev.fire.config.DefaultConfig;
+import dev.dfrevert.DFrevert;
 import net.minecraft.text.*;
 
 import java.awt.*;
-import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Map.entry;

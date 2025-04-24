@@ -1,11 +1,13 @@
 {
 	"required": true,
-	"package": "dev.fire.mixin",
+	"package": "dev.dfrevert.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
+	],
+	"client": [
+		"MPlayerEntityRenderer",
 		"PlayerListHudMixin",
-		"ChatHudMixin",
-		"MPlayerEntityRenderer"
+		"MClientConnection"
 	],
 	"injectors": {
 		"defaultRequire": 1
